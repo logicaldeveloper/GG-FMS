@@ -11,17 +11,6 @@ $expenses = json_decode($json_data, true);
 if (json_last_error() !== JSON_ERROR_NONE) {
     die("Error: Invalid JSON in expenses.json");
 }
-
-// Prepare category totals
-$categoryTotals = [];
-foreach ($expenses as $e) {
-    $category = $e['category'] ?? 'Other';
-    $amount = $e['amount'] ?? 0;
-    $categoryTotals[$category] = ($categoryTotals[$category] ?? 0) + $amount;
-}
-
-$labels = json_encode(array_keys($categoryTotals), JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS);
-$data = json_encode(array_values($categoryTotals), JSON_NUMERIC_CHECK);
 ?>
 
 <!DOCTYPE html>
@@ -49,13 +38,24 @@ $data = json_encode(array_values($categoryTotals), JSON_NUMERIC_CHECK);
       justify-content: center;
     }
 
-    .table-container, .chart-container {
-      flex: 1;
-      min-width: 300px;
+    .filters, .table-container, .chart-container {
       background: #fff;
       padding: 15px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .filters div {
+      flex: 1;
+      min-width: 200px;
     }
 
     table {
@@ -79,7 +79,7 @@ $data = json_encode(array_values($categoryTotals), JSON_NUMERIC_CHECK);
       height: auto;
     }
 
-    .filters {
+     .filters {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -102,27 +102,41 @@ $data = json_encode(array_values($categoryTotals), JSON_NUMERIC_CHECK);
       font-weight: bold;
       margin-top: 10px;
     }
-
-    @media (max-width: 768px) {
-      .dashboard-container {
-        flex-direction: column;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <h3>Expense Dashboard</h3> <h6><a href="fms.html">Add Expense</a></h6>
+  <h3>Expense Dashboard</h3> <h6><a href="fms.html">Add Expense</a></h6> <h6><a href="maintenance.php">Maintenance</a></h6>
 
   <!-- Filters -->
   <div class="filters" width="80%">
-    <div width="40%">
-      <label for="filterLocation">Filter by Location:</label>
-      <input type="text" id="filterLocation" placeholder="e.g., Bangalore" >
+    <div>
+      <label for="filterCategory">Filter by Expense Category:</label>
+      <select id="filterCategory" onchange="applyFilters()">
+        <option value="">All</option>
+        <option>Food & Beverages</option>
+        <option>Home Maintenance</option>
+        <option>Groceries</option>
+        <option>Fuel</option>
+        <option>Entertainment</option>
+        <option>Appliance</option>
+        <option>Misc</option>
+      </select>
     </div>
-    <div width="40%">
+
+    <div>
+      <label for="filterCrDr">Filter by Source:</label>
+      <select id="filterCrDr" onchange="applyFilters()">
+        <option value="">All</option>
+        <option value="Expense from Savings">Expense from Savings</option>
+        <option value="Expense from Credit">Expense from Credit</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div>
       <label for="filterMode">Filter by Payment Mode:</label>
-      <select id="filterMode" >
+      <select id="filterMode" onchange="applyFilters()">
         <option value="">All</option>
         <option value="Credit Card">Credit Card</option>
         <option value="Debit Card">Debit Card</option>
@@ -131,21 +145,23 @@ $data = json_encode(array_values($categoryTotals), JSON_NUMERIC_CHECK);
       </select>
     </div>
   </div>
+
   <div class="total">Total: ₹<span id="totalAmount">0.00</span></div>
 
-  <!-- Dashboard Content -->
   <div class="dashboard-container">
     <!-- Expense Table -->
     <div class="table-container">
       <h2>Expenses</h2>
+      <!-- Expense Table -->
       <table id="expensesTable">
         <thead>
           <tr>
             <th>Date</th>
             <th>Amount</th>
-            <th>Mode</th>
+            <th>Payment Mode</th>
             <th>Description</th>
-            <th>Location</th>
+            <th>Expense Category</th>
+            <th>Credit/Debit</th>
           </tr>
         </thead>
         <tbody>
@@ -154,112 +170,167 @@ $data = json_encode(array_values($categoryTotals), JSON_NUMERIC_CHECK);
       </table>
     </div>
 
-  <!-- Category Chart -->
-<div class="chart-container">
-  <canvas id="categoryChart"></canvas>
-</div>
+    <!-- Category Chart -->
+    <div class="chart-container">
+      <h2>Expenses by Category</h2>
+      <canvas id="categoryChart"></canvas>
+    </div>
+    <!-- Credit/Debit Chart 
+    <div class="chart-container">
+      <h2>Expenses by Source (Savings vs Credit)</h2>
+      <canvas id="crDrChart"></canvas> --> 
+  </div>
 
-<script>
-  const originalExpenses = <?= json_encode($expenses) ?>;
+  <script>
+    const originalExpenses = <?= json_encode($expenses) ?>;
 
-  function applyFilters() {
-    const filterLocation = document.getElementById('filterLocation').value.trim().toLowerCase();
-    const filterMode = document.getElementById('filterMode').value;
+    function applyFilters() {
+      const filterCategory = document.getElementById('filterCategory').value;
+      const filterCrDr = document.getElementById('filterCrDr').value;
+      const filterMode = document.getElementById('filterMode').value;
 
-    const filtered = originalExpenses.filter(expense => {
-      const locationMatch = !filterLocation ||
-        (expense.location?.name?.toLowerCase().includes(filterLocation));
-      const modeMatch = !filterMode || expense.type === filterMode;
-      return locationMatch && modeMatch;
-    });
+      const filtered = originalExpenses.filter(expense => {
+        const categoryMatch = !filterCategory || expense.category === filterCategory;
+        const crDrMatch = !filterCrDr || expense.cr_dr_category === filterCrDr;
+        const modeMatch = !filterMode || expense.type === filterMode;
+        return categoryMatch && crDrMatch && modeMatch;
+      });
 
-    renderTable(filtered);
-    updateTotal(filtered);
-    updateChart(filtered);
-  }
+      renderTable(filtered);
+      updateTotal(filtered);
+      updateChart(filtered);
+    } 
 
-  function renderTable(expenses) {
-    const tbody = document.querySelector("#expensesTable tbody");
-    tbody.innerHTML = expenses.map(e => `
-      <tr>
-        <td>${e.date}</td>
-        <td>${e.amount.toFixed(2)}</td>
-        <td>${e.type}</td>
-        <td>${e.description}</td>
-        <td>${e.location?.name || '-'}</td>
-      </tr>
-    `).join('');
-  }
+    function renderTable(expenses) {
+        const tbody = document.querySelector("#expensesTable tbody");
+        tbody.innerHTML = expenses.map(e => 
+        ` <tr>
+            <td>${e.date}</td>
+            <td>${e.amount.toFixed(2)}</td>
+            <td>${e.type}</td>
+            <td>${e.description}</td>
+            <td>${e.category}</td>
+            <td>${e.cr_dr_category}</td>
+          </tr>
+         `).join('');
+      }
 
-  function updateTotal(expenses) {
-    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
-    document.getElementById('totalAmount').textContent = total.toFixed(2);
-  }
-
-  function getCategoryTotals(expenses) {
-    const categoryTotals = {};
-    expenses.forEach(e => {
-      const category = e.category || 'Other';
-      categoryTotals[category] = (categoryTotals[category] || 0) + e.amount;
-    });
-    return categoryTotals;
-  }
-
-  function updateChart(expenses) {
-    const categoryTotals = getCategoryTotals(expenses);
-    const labels = Object.keys(categoryTotals);
-    const data = Object.values(categoryTotals);
-
-    console.log("Labels:", labels);
-    console.log("Data:", data);
-
-    if (window.myChart) {
-      window.myChart.data.labels = labels;
-      window.myChart.data.datasets[0].data = data;
-      window.myChart.update();
-      return;
+    function updateTotal(expenses) {
+      const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+      document.getElementById('totalAmount').textContent = total.toFixed(2);
     }
 
-    const ctx = document.getElementById('categoryChart').getContext('2d');
-    window.myChart = new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Expenses by Category',
-          data: data,
-          backgroundColor: [
-            'rgba(54, 162, 235, 0.6)', // Savings
-            'rgba(255, 99, 132, 0.6)', // Credit
-            'rgba(200, 200, 200, 0.6)' // Other
-          ]
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom'
-          },
-          title: {
-            display: true,
-            text: 'Expenses by Category'
+    function getCategoryTotals(expenses) {
+      const categoryTotals = {};
+      expenses.forEach(e => {
+        const cat = e.category || 'Misc';
+        categoryTotals[cat] = (categoryTotals[cat] || 0) + e.amount;
+      });
+      return categoryTotals;
+    }
+
+    //Chart baed on expenses category
+    function updateChart(expenses) {
+      const categoryTotals = getCategoryTotals(expenses);
+      const labels = Object.keys(categoryTotals);
+      const data = Object.values(categoryTotals);
+
+      if (window.myChart) {
+        window.myChart.data.labels = labels;
+        window.myChart.data.datasets[0].data = data;
+        window.myChart.update();
+        return;
+      }
+
+      const ctx = document.getElementById('categoryChart').getContext('2d');
+      window.myChart = new Chart(ctx, {
+        type: 'pie',
+         data: {
+          labels: labels,
+          datasets: [{
+            label: 'Expenses by Category',
+             data,
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(54, 162, 235, 0.6)',
+              'rgba(255, 206, 86, 0.6)',
+              'rgba(153, 102, 255, 0.6)',
+              'rgba(255, 159, 64, 0.6)',
+              'rgba(200, 200, 200, 0.6)'
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' },
+            title: { display: true, text: 'Expenses by Category' }
           }
         }
+      });
+    }
+
+    //chart based on credit/debit category
+    function updateCrDrChart(expenses) {
+      const totals = {};
+      expenses.forEach(e => {
+        const cat = e.cr_dr_category || 'Other';
+        totals[cat] = (totals[cat] || 0) + e.amount;
+      });
+
+      const labels = Object.keys(totals);
+      const data = Object.values(totals);
+
+      if (window.crDrChart) {
+        window.crDrChart.data.labels = labels;
+        window.crDrChart.data.datasets[0].data = data;
+        window.crDrChart.update();
+        return;
       }
+
+      const ctx = document.getElementById('crDrChart').getContext('2d');
+      window.crDrChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Expenses by Source',
+            data,
+            backgroundColor: [
+              'rgba(54, 162, 235, 0.6)', // Savings
+              'rgba(255, 99, 132, 0.6)', // Credit
+              'rgba(200, 200, 200, 0.6)' // Other
+            ]
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            },
+            title: {
+              display: true,
+              text: 'Expenses by Source (Savings vs Credit)'
+            }
+          }
+        }
+      });
+    }
+
+    // Initial render
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTable(originalExpenses);
+      updateTotal(originalExpenses);
+      updateChart(originalExpenses);
+      //updateCrDrChart(originalExpenses);
+
+      document.getElementById('filterCategory').addEventListener('change', applyFilters);
+      document.getElementById('filterCrDr').addEventListener('change', applyFilters);
+      document.getElementById('filterMode').addEventListener('change', applyFilters);
     });
-  }
+ </script>
 
-  // Initial render
-  window.addEventListener('DOMContentLoaded', () => {
-    renderTable(originalExpenses);
-    updateTotal(originalExpenses);
-    updateChart(originalExpenses);
-
-    document.getElementById('filterLocation').addEventListener('input', applyFilters);
-    document.getElementById('filterMode').addEventListener('change', applyFilters);
-  });
-</script>
- 
 </body>
 </html>

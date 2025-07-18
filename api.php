@@ -2,7 +2,6 @@
 header("Content-Type: application/json");
 $DATA_FILE = "expenses.json";
 
-// Helper to load expenses
 function load_expenses() {
     global $DATA_FILE;
     if (!file_exists($DATA_FILE)) {
@@ -13,7 +12,6 @@ function load_expenses() {
     return json_decode($json, true) ?: [];
 }
 
-// Helper to save expenses
 function save_expenses($data) {
     global $DATA_FILE;
     file_put_contents($DATA_FILE, json_encode($data, JSON_PRETTY_PRINT));
@@ -29,18 +27,17 @@ if ($method === 'POST') {
         exit;
     }
 
-    // Assign category
+    // Assign cr_dr_category
     $type = $input['type'] ?? '';
     if (in_array($type, ['UPI', 'Debit Card'])) {
-        $input['category'] = 'Savings Account Expenses';
+        $input['cr_dr_category'] = 'Expense from Savings';
     } elseif (in_array($type, ['UPI CC', 'Credit Card'])) {
-        $input['category'] = 'Credit Expenses';
+        $input['cr_dr_category'] = 'Expense from Credit';
     } else {
-        $input['category'] = 'Other';
+        $input['cr_dr_category'] = 'Other';
     }
 
     $expenses = load_expenses();
-    $input['id'] = count($expenses) + 1;
     $expenses[] = $input;
     save_expenses($expenses);
 
