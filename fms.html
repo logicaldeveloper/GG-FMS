@@ -64,7 +64,7 @@
       background-color: #45a049;
     }
 
-    @media (min-width: 600px) {
+     @media (min-width: 600px) {
       form {
         padding: 20px;
       }
@@ -100,11 +100,20 @@
     <label for="bank">Bank Name:</label>
     <input type="text" id="bank" placeholder="e.g., HDFC, PhonePe" />
 
-    <label for="description">Description:</label>
-    <input type="text" id="description" placeholder="e.g., Grocery, Lunch" />
+    <label for="category">Expense Category:</label>
+    <select id="category" required>
+      <option value="">Select</option>
+      <option>Food & Beverages</option>
+      <option>Home Maintenance</option>
+      <option>Groceries</option>
+      <option>Fuel</option>
+      <option>Entertainment</option>
+      <option>Appliance</option>
+      <option>Misc</option>
+    </select>
 
-    <label for="location">Location:</label>
-    <input type="text" id="location" placeholder="e.g., Bangalore, India" />
+    <label for="description">Description:</label>
+    <input type="text" id="description" placeholder="e.g., Dinner, Repair, Netflix" />
 
     <button type="submit">Submit</button>
   </form>
@@ -137,19 +146,14 @@
         amount: parseFloat(document.getElementById('amount').value),
         type: document.getElementById('type').value,
         bank: document.getElementById('bank').value,
-        description: document.getElementById('description').value,
-        location: {
-          name: document.getElementById('location').value
-        }
+        category: document.getElementById('category').value,
+        description: document.getElementById('description').value
       };
 
-      // Assign category
-      if (['UPI', 'Debit Card'].includes(expense.type)) {
-        expense.category = 'Savings Account Expenses';
-      } else if (['UPI CC', 'Credit Card'].includes(expense.type)) {
-        expense.category = 'Credit Expenses';
-      } else {
-        expense.category = 'Other';
+      // Assign category-based category (optional, or just use the dropdown)
+      if (!expense.category) {
+        alert("Please select a category");
+        return;
       }
 
       fetch('api.php', {
