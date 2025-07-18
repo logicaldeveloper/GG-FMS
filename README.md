@@ -6,15 +6,14 @@ A simple, mobile-friendly personal finance tracker that helps you log daily expe
 
 ## 📋 Features
 
-- ✅ Expense Entry Form (Web)
-- ✅ Dashboard with Interactive Filters
-- ✅ Pie Chart Visualization (Expense Category + Credit/Savings)
-- ✅ JSON-based Data Storage
-- ✅ Mobile Responsive Design
-- ✅ Supports Filtering by:
-  - Expense Category
-  - Payment Mode
-  - Source (Savings vs Credit)
+| Feature | Description |
+|--------|-------------|
+| ✅ Expense Entry | Web form to add expenses with category and payment mode |
+| ✅ Dashboard | Shows current month's expenses with filters and chart |
+| ✅ Maintenance Screen | Backup, restore, and purge expense data |
+| ✅ History Dashboard | View expense data from previous months |
+| ✅ JSON Storage | Uses `expenses.json` for current month and monthly backups |
+| ✅ Mobile Responsive | Works well on phones and desktops |
 
 ---
 
@@ -23,10 +22,10 @@ A simple, mobile-friendly personal finance tracker that helps you log daily expe
 | Layer | Technology |
 |-------|------------|
 | Frontend | HTML, CSS, JavaScript |
-| Backend | PHP (for form handling) |
-| Data Storage | JSON file (`expenses.json`) |
+| Backend | PHP (for form handling, backup, restore) |
+| Data Storage | JSON files (`expenses.json` and monthly backups) |
 | Charting | Chart.js |
-| Hosting | Local or Shared Hosting (e.g., XAMPP, WAMP, cPanel)
+| Hosting | Local or Shared Hosting (e.g., XAMPP, WAMP, cPanel) |
 
 ---
 
@@ -34,11 +33,16 @@ A simple, mobile-friendly personal finance tracker that helps you log daily expe
 personal-finance-tracker/
 │
 ├── index.html # Expense Entry Form
-├── dashboard.php # Dashboard with filters and charts
-├── expenses.json # Expense data storage
-├── api.php # PHP backend to add expense
-└── README.md # This file
-
+├── dashboard.php # Current month dashboard
+├── historyDashboard.php # View old expense data by month
+├── expenses.json # Current month's expense data
+├── api.php # Add expense logic
+├── maintenance.php # Backup, restore, and purge
+├── README.md # This file
+└── backups/ # Monthly backups stored here
+├── Apr-2025.json
+├── Mar-2025.json
+└── Feb-2025.json
 
 ---
 
@@ -84,21 +88,46 @@ personal-finance-tracker/
 
 ---
 
-## 📊 Dashboard Features
+## 📊 Dashboard
 
-### Filters
-- **Expense Category** (e.g., Food & Beverages, Groceries)
-- **Payment Mode** (e.g., UPI, Credit Card)
-- **Source** (`cr_dr_category`):
-  - Expense from Savings
-  - Expense from Credit
+- Shows only **current month’s expenses**
+- Filters by:
+  - Expense Category
+  - Payment Mode
+  - Source (Savings vs Credit)
+- Visualizes:
+  - Spending by Category
+  - Spending by Source (Savings vs Credit)
+- Dynamic total updates based on filters
 
-### Visualizations
-- **Pie Chart 1**: Spending by Expense Category
-- **Pie Chart 2**: Spending by Source (Savings vs Credit)
+---
 
-### Dynamic Total
-- Total amount updates based on applied filters
+## 🔧 Maintenance Screen (`maintenance.php`)
+
+### Features:
+- **Backup Expense**:
+  - Saves `expenses.json` as `Month-Year.json` (e.g., `May-2025.json`)
+  - Dropdown to choose month
+- **Purge Expense Data**:
+  - Clears current month’s data
+  - Only allowed if a backup for the current month exists
+  - Confirmation alert before purge
+- **Restore Backup**:
+  - Dropdown to restore from last 3 months (e.g., `Apr-2025.json`, `Mar-2025.json`)
+  - Overwrites `expenses.json` with selected backup
+
+---
+
+## 📜 History Dashboard (`historyDashboard.php`)
+
+### Features:
+- Dropdown to select **previous month backups**
+- Displays expense data from selected month
+- Same filters and charts as dashboard:
+  - Expense Category
+  - Payment Mode
+  - Source (Savings vs Credit)
+- Dynamic total and chart updates based on selected month
 
 ---
 
@@ -121,21 +150,3 @@ personal-finance-tracker/
 - Add `manifest.json` and service worker for offline use
 
 ---
-
-## 📦 Want Me to Package Everything?
-
-Would you like me to:
-- Package all files into a **downloadable ZIP**?
-- Help you **deploy this online**?
-- Add a **setup guide** for Raspberry Pi or Android Termux?
-
-Let me know and I’ll help you take this to the next level! 😊
-
----
-
-## 🙌 Final Words
-
-You've built something powerful and flexible — great job sticking with it and making it your own!
-
-Have questions or need help?  
-Reach out anytime — I'm happy to assist. 😊
