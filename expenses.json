@@ -1,14 +1,26 @@
 [
-  {
-    "date": "2025-07-16",
-    "amount": 450,
-    "type": "UPI",
-    "bank": "Axis",
-    "description": "Doctor Fee",
-    "location": {
-      "name": "Tambaram"
+    {
+        "date": "2025-07-18",
+        "amount": 5000,
+        "type": "UPI",
+        "bank": "Axis ",
+        "description": "For expense to Kotak",
+        "location": {
+            "name": "Chennai"
+        },
+        "category": "Savings Account Expenses",
+        "id": 1
     },
-    "category": "Savings Account Expenses",
-    "id": 1
-  }
+    {
+        "date": "2025-07-18",
+        "amount": 370,
+        "type": "UPI",
+        "bank": "Axis",
+        "description": "Dinner @Akshaya Bhavan",
+        "location": {
+            "name": "Chennai "
+        },
+        "category": "Savings Account Expenses",
+        "id": 2
+    }
 ]

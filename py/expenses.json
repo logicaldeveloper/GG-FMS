@@ -1,0 +1,14 @@
+[
+  {
+    "date": "2025-07-16",
+    "amount": 450,
+    "type": "UPI",
+    "bank": "Axis",
+    "description": "Doctor Fee",
+    "location": {
+      "name": "Tambaram"
+    },
+    "category": "Savings Account Expenses",
+    "id": 1
+  }
+]
