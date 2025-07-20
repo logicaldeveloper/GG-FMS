@@ -106,7 +106,9 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 </head>
 <body>
 
-  <h3>Expense Dashboard</h3> <h6><a href="fms.html">Add Expense</a></h6> <h6><a href="maintenance.php">Maintenance</a></h6>
+  <h3>Expense Dashboard</h3> <h6><a href="historyDashboard.php">History Dashboard</a> | <a href="fms.html">Add Expense</a> | <a href="maintenance.php">Maintenance</a></h6>
+  
+  
 
   <!-- Filters -->
   <div class="filters" width="80%">
@@ -148,12 +150,13 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
   <div class="total">Total: ₹<span id="totalAmount">0.00</span></div>
 
-  <div class="dashboard-container">
+  <div class="dashboard-container" style="display: flex; justify-content: space-around; flex-wrap: wrap; align-items: top;"
+  width="80%">
     <!-- Expense Table -->
-    <div class="table-container">
+    <div class="table-container" width="100%" style="flex-wrap: wrap; overflow-x: auto;">
       <h2>Expenses</h2>
       <!-- Expense Table -->
-      <table id="expensesTable">
+      <table id="expensesTable" width="100%">
         <thead>
           <tr>
             <th>Date</th>

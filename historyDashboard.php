@@ -100,7 +100,8 @@ if (is_dir($backupDir)) {
 </head>
 <body>
 
-  <h1>📜 Historical Expense Dashboard</h1>
+  <h2>📜 Historical Expense Dashboard</h2>
+  <center> <h6><a href="pcdashboard.php">Main Dashboard</a> | <a href="fms.html">Add Expense</a></h6> </center>
 
   <!-- Select Month -->
   <div class="filters">

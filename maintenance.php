@@ -96,6 +96,7 @@ asort($backupOptions);
 <html>
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Maintenance - Backup & Restore</title>
   <style>
     body {
@@ -162,8 +163,9 @@ asort($backupOptions);
 <p/>
   <!-- 1. Backup Expense -->
 
-<div style="display: flex; justify-content: space-around; flex-wrap: wrap; align-items: center;">
-  <div class="box">
+<div style="display: flex; justify-content: space-around; flex-wrap: wrap; align-items: center;"
+  width="80%">
+  <div class="box" width="25%">
     <h3>1. Backup Expense</h3>
     <p>Select the month to back up your current `expenses.json` file.</p>
     <form method="post">
@@ -184,7 +186,7 @@ asort($backupOptions);
   </div>
 
   <!-- 2. Restore Backup -->
-  <div class="box">
+  <div class="box" width="25%">
     <h3>2. Restore Backup</h3>
     <p>Select a backup file from the last 3 months to restore your expense data.</p>
     <form method="post">
@@ -200,7 +202,7 @@ asort($backupOptions);
   </div>
 
   <!-- 3. Purge Expense -->
-  <div class="box">
+  <div class="box" width="25%">
     <h3>3. Start Fresh (Purge Current Data)</h3>
     <p>This will clear the current `expenses.json`. Only allowed if a backup for this month exists.</p>
     <form method="post" onsubmit="return confirm('Are you sure you want to clear all expenses?');">
