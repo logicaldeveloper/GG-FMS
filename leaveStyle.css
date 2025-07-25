@@ -1,0 +1,66 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+#calendar {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+#modalDateDisplay {
+    font-size: 0.9rem;
+    align-self: center;
+    margin-left: 15px;
+}
+
+.sidebar {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    height: calc(100vh - 20px);
+    overflow-y: auto;
+}
+
+.fc-daygrid-day-frame {
+    cursor: pointer;
+}
+
+#month-year {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #495057;
+}
+
+.list-group-item {
+    transition: all 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-weight: normal;
+}
+
+.view-dates, .delete-leave {
+    opacity: 0.7;
+    transition: all 0.2s;
+}
+
+.view-dates:hover, .delete-leave:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.fc-day-sat, .fc-day-sun {
+    background-color: #f8f9fa;
+}
+
+.fc-daygrid-day-number {
+    font-weight: bold;
+}
